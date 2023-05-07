@@ -24,7 +24,7 @@
 
 # Fonstr Relay
 
-A simple and efficient Nostr relay server implemented using Fastify and WebSockets.
+A simple and efficient Nostr relay server designed to run on a mobile phone.  See [blog post](https://dev.to/melvincarvalho/run-a-nostr-relay-on-your-phone-with-termux-and-fonstr-4cmg) for more information.
 
 ## Features
 
