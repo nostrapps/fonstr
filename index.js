@@ -101,7 +101,7 @@ fi.register(async function (fastify) {
   })
 })
 
-fi.listen({ port }, err => {
+fi.listen({ host: '0.0.0.0', port }, err => {
   if (err) throw err
   console.log(`listening on ${port}`)
 })
