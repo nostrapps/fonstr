@@ -3,13 +3,40 @@
 import fastify from 'fastify'
 import fastifyWebsocket from '@fastify/websocket'
 import { validateEvent, verifySignature } from 'nostr-tools'
+import { readFileSync } from 'fs'
+import minimist from 'minimist'
 
-const port = process.argv[2] || 4444
+const argv = minimist(process.argv.slice(2))
+const useHttps = argv.h || argv.https
+
+console.log(argv)
+
+let port
+for (const arg of argv._) {
+  if (parseInt(arg)) {
+    port = parseInt(arg)
+    break
+  }
+}
+
+if (!port) {
+  port = 4444
+}
 
 const events = []
 const subscribers = new Map()
 
-const fi = fastify()
+const httpsOptions = useHttps
+  ? {
+    key: readFileSync('privkey.pem'),
+    cert: readFileSync('fullchain.pem')
+  }
+  : undefined
+
+const fi = fastify({
+  https: httpsOptions,
+  http2: false
+})
 
 fi.register(fastifyWebsocket)
 fi.register(async function (fastify) {
