@@ -32,8 +32,6 @@ A simple and efficient Nostr relay server designed to run on a mobile phone.  Se
 - Efficient message handling and routing
 - Easy to set up and configure
 
-
-
 ### Running the Relay
 
 You can start the relay server using the `fonstr` command provided in the `bin` field of `package.json`. If you have installed the package globally or linked it, you can run:
@@ -73,6 +71,26 @@ Then, install the necessary dependencies:
 npm install
 ```
 
+## Docker
+
+### Building the Docker Image
+
+First, you need to build the Docker image for the server. Navigate to the root directory of the project, where the Dockerfile is located, and run the following command:
+
+```bash
+docker build -t fonstr .
+```
+
+### Running the Server with Docker
+
+Now that you have built the Docker image, you can run a container using that image. You can map the port and mount a volume to persist the data directory.
+Mapping the Port
+
+Use the -p flag to map the host port to the container port. In this case, we'll map the host port 4444 to the container port 4444:
+
+```bash
+docker run -d -p 4444:4444 nosdav
+```
 
 ## API
 
@@ -83,7 +101,7 @@ This Nostr relay server supports the following Nostr event types:
 - `CLOSE`: Unsubscribe from a subscription
 - `EOSE`: End of subscription events signal
 
-## Example
+## Example REQ
 
 ```javascript
 // Connect to the Nostr relay server using a WebSocket
