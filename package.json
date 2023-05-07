@@ -1,0 +1,35 @@
+{
+  "name": "fonstr",
+  "version": "0.0.0",
+  "description": "fonstr",
+  "main": "index.js",
+  "type": "module",
+  "bin": {
+    "fonstr": "./index.js"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nostrapps/fonstr.git"
+  },
+  "keywords": [
+    "nostr",
+    "relay",
+    "phone",
+    "termux"
+  ],
+  "author": "Melvin Carvalho",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/nostrapps/fonstr/issues"
+  },
+  "homepage": "https://github.com/nostrapps/fonstr#readme",
+  "dependencies": {
+    "@fastify/websocket": "^8.0.0",
+    "fastify": "^4.17.0",
+    "nostr-tools": "^1.10.1"
+  }
+}
