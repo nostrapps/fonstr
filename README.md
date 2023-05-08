@@ -1,10 +1,8 @@
-
-
-<div align="center">  
+<div align="center">
   <h1>fonstr</h1>
 </div>
 
-<div align="center">  
+<div align="center">
 <i>fonstr</i>
 </div>
 
@@ -21,10 +19,19 @@
 [![npm](https://img.shields.io/npm/dw/fonstr.svg)](https://npmjs.com/package/fonstr)
 [![Github Stars](https://img.shields.io/github/stars/nostrapps/fonstr.svg)](https://github.com/nostrapps/fonstr/)
 
-
 # Fonstr Relay
 
-A simple and efficient Nostr relay server designed to run on a mobile phone.  See [blog post](https://dev.to/melvincarvalho/run-a-nostr-relay-on-your-phone-with-termux-and-fonstr-4cmg) for more information.
+Fonstr is a simple and efficient Nostr relay server designed to run on mobile phones. It can be run in one line of code.  For more information about fonster, see this [blog post](https://dev.to/melvincarvalho/run-a-nostr-relay-on-your-phone-with-termux-and-fonstr-4cmg).
+
+## Quickstart
+
+To run the Fonstr Nostr relay with just one line of code, use:
+
+```bash
+npx fonstr [port]
+```
+
+Replace `[port]` with the desired port number. If no port is provided, the server will run on port 4444 by default.
 
 ## Features
 
@@ -34,18 +41,10 @@ A simple and efficient Nostr relay server designed to run on a mobile phone.  Se
 
 ### Running the Relay
 
-You can start the relay server using the `fonstr` command provided in the `bin` field of `package.json`. If you have installed the package globally or linked it, you can run:
+If you have installed the package globally or linked it, you can run:
 
 ```bash
 fonstr [port]
-```
-
-Replace `[port]` with the desired port number. If no port is provided, the server will run on port 4444 by default.
-
-If you have not installed the package globally or linked it, you can use `npx` to run the `fonstr` command:
-
-```bash
-npx fonstr [port]
 ```
 
 Alternatively, you can run the server using `node`:
@@ -56,7 +55,9 @@ node index.js [port]
 
 Now the Nostr relay server will be up and running, ready to handle incoming events and subscriptions.
 
-### Installation from source
+To run with HTTPS, use `-h` or `--https` and use `./fullchain.pem` and `./privkey.pem`.
+
+### Installation from Source
 
 First, clone the repository and navigate to the project directory:
 
@@ -75,7 +76,7 @@ npm install
 
 ### Building the Docker Image
 
-First, you need to build the Docker image for the server. Navigate to the root directory of the project, where the Dockerfile is located, and run the following command:
+First, navigate to the root directory of the project, where the Dockerfile is located, and run the following command:
 
 ```bash
 docker build -t fonstr .
@@ -83,13 +84,10 @@ docker build -t fonstr .
 
 ### Running the Server with Docker
 
-Now that you have built the Docker image, you can run a container using that image. You can map the port and mount a volume to persist the data directory.
-Mapping the Port
-
-Use the -p flag to map the host port to the container port. In this case, we'll map the host port 4444 to the container port 4444:
+Run a container using the built image. Map the port and mount a volume to persist the data directory.
 
 ```bash
-docker run -d -p 4444:4444 nosdav
+docker run -d -p 4444:4444 fonstr
 ```
 
 ## API
@@ -122,7 +120,6 @@ socket.addEventListener('message', (event) => {
 This project is licensed under the MIT License. See [LICENSE](LICENSE) for more information.
 
 ## Contributing
-
 Contributions are welcome! Feel free to open a pull request or report any issues you find.
 
 ## License
