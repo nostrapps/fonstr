@@ -3,20 +3,20 @@ import fastify from 'fastify'
 import fastifyWebsocket from '@fastify/websocket'
 import { readFileSync } from 'fs'
 
-export function createServer({ port, useHttps = false }) {
+function createServer ({ port, useHttps = false }) {
   const events = []
   const subscribers = new Map()
 
   const httpsOptions = useHttps
     ? {
-      key: readFileSync('privkey.pem'),
-      cert: readFileSync('fullchain.pem'),
-    }
+        key: readFileSync('privkey.pem'),
+        cert: readFileSync('fullchain.pem')
+      }
     : undefined
 
   const fi = fastify({
     https: httpsOptions,
-    http2: false,
+    http2: false
   })
 
   fi.register(fastifyWebsocket)
@@ -44,7 +44,6 @@ export function createServer({ port, useHttps = false }) {
     console.log(`listening on ${port}`)
   })
 }
-
 
 export const eventPassesFilter = (event, filter) => {
   const { types, kind, from, to } = filter
@@ -117,4 +116,13 @@ export const processMessage = async (type, value, rest, socket, events, subscrib
       socket.send('["NOTICE", "Unrecognized event"]')
       console.log('Unrecognized event')
   }
+}
+
+// Compatibility with ES6 imports
+export { createServer }
+
+// Compatibility with CommonJS require
+const exportsObject = { createServer }
+if (typeof module !== 'undefined') {
+  module.exports = exportsObject
 }
