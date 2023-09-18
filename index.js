@@ -79,6 +79,15 @@ function isParameterizedReplaceable (kind) {
   return kind >= 30000 && kind < 40000
 }
 
+function getDTagValue (tags) {
+  for (const tag of tags) {
+    if (tag[0] === 'd') {
+      return tag[1]
+    }
+  }
+  return null
+}
+
 export const processMessage = async (type, value, rest, socket, events, subscribers) => {
   switch (type) {
     case 'EVENT':
