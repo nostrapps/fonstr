@@ -95,8 +95,40 @@ export const processMessage = async (type, value, rest, socket, events, subscrib
       const veryOk = verifySignature(value)
       console.log('ok', ok, veryOk)
       if (ok && veryOk) {
-        events.push(value)
-        console.log('event ok')
+        if (isEphemeralKind(value.kind)) {
+          // Don't store the event, just process and forget
+          // ... (rest of your processing logic)
+        } else if (isReplaceableKind(value.kind) || isParameterizedReplaceable(value.kind)) {
+          // Find and replace the previous event with the same pubkey and kind
+          let indexToReplace = -1
+          for (let i = 0; i < events.length; i++) {
+            if (events[i].pubkey === value.pubkey && events[i].kind === value.kind) {
+              if (isParameterizedReplaceable(value.kind)) {
+                const dTagValue = getDTagValue(value.tags)
+                const existingDTagValue = getDTagValue(events[i].tags)
+                if (dTagValue === existingDTagValue) {
+                  indexToReplace = i
+                  break;
+                }
+              } else {
+                indexToReplace = i
+                break;
+              }
+            }
+          }
+          if (indexToReplace !== -1) {
+            events[indexToReplace] = value
+          } else {
+            events.push(value)
+          }
+          // ... (rest of your processing logic)
+        } else {
+          // Regular event, just add to the list
+          events.push(value)
+          console.log('event ok')
+          // ... (rest of your processing logic)
+        }
+
         subscribers.forEach((filters, subscriber) => {
           filters.forEach(filter => {
             if (eventPassesFilter(value, filter)) {
