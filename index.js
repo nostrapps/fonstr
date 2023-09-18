@@ -67,6 +67,18 @@ export const eventPassesFilter = (event, filter) => {
   return true
 }
 
+function isReplaceableKind (kind) {
+  return (kind >= 10000 && kind < 20000) || kind === 0 || kind === 3
+}
+
+function isEphemeralKind (kind) {
+  return kind >= 20000 && kind < 30000
+}
+
+function isParameterizedReplaceable (kind) {
+  return kind >= 30000 && kind < 40000
+}
+
 export const processMessage = async (type, value, rest, socket, events, subscribers) => {
   switch (type) {
     case 'EVENT':
