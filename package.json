@@ -1,6 +1,6 @@
 {
   "name": "fonstr",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "description": "fonstr",
   "main": "index.js",
   "type": "module",
