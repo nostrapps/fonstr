@@ -21,7 +21,7 @@
 
 # Fonstr Relay
 
-Fonstr is a simple and efficient Nostr relay server designed to run on mobile phones. It can be run in one line of code.  For more information about fonster, see this [blog post](https://dev.to/melvincarvalho/run-a-nostr-relay-on-your-phone-with-termux-and-fonstr-4cmg).
+Fonstr is a simple and efficient Nostr relay server designed to run on mobile phones. It can be run in one line of code.  For more information about fonstr, see this [blog post](https://dev.to/melvincarvalho/run-a-nostr-relay-on-your-phone-with-termux-and-fonstr-4cmg).
 
 ## Quickstart
 
