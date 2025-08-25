@@ -3,8 +3,9 @@ import fastify from 'fastify'
 import fastifyWebsocket from '@fastify/websocket'
 import { readFileSync } from 'fs'
 
+const MAX_EVENTS = parseInt(process.env.MAX_EVENTS) || 1000  // Configurable max events to prevent memory exhaustion
+
 function createServer ({ port, useHttps = false }) {
-  const MAX_EVENTS = parseInt(process.env.MAX_EVENTS) || 1000  // Configurable max events to prevent memory exhaustion
   const events = []
   const subscribers = new Map()
 
