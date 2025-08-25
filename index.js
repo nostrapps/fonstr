@@ -48,24 +48,57 @@ function createServer ({ port, useHttps = false }) {
 }
 
 export const eventPassesFilter = (event, filter) => {
-  const { types, kind, from, to } = filter
-
-  if (types && !types.includes(event.type)) {
+  // Standard Nostr filter fields (NIP-01)
+  if (filter.ids && !filter.ids.includes(event.id)) {
     return false
   }
-
-  if (kind && event.kind !== kind) {
+  
+  if (filter.authors && !filter.authors.includes(event.pubkey)) {
     return false
   }
-
-  if (from && event.from !== from) {
+  
+  if (filter.kinds && !filter.kinds.includes(event.kind)) {
     return false
   }
-
-  if (to && event.to !== to) {
+  
+  if (filter.since && event.created_at < filter.since) {
     return false
   }
-
+  
+  if (filter.until && event.created_at > filter.until) {
+    return false
+  }
+  
+  // Tag filters (#e, #p, etc.) - NIP-01 compliant
+  // Check all filter properties that start with '#'
+  for (const [key, values] of Object.entries(filter)) {
+    if (key.startsWith('#') && key.length === 2) {
+      const tagName = key[1] // Get the letter after '#'
+      const eventTagValues = event.tags
+        .filter(tag => tag[0] === tagName)
+        .map(tag => tag[1])
+      
+      // The event must have at least one matching tag value
+      if (!values.some(v => eventTagValues.includes(v))) {
+        return false
+      }
+    }
+  }
+  
+  // Keep existing custom filters for backward compatibility (optional)
+  if (filter.from && event.from !== filter.from) {
+    return false
+  }
+  
+  if (filter.to && event.to !== filter.to) {
+    return false
+  }
+  
+  // Legacy support for single 'kind' (can remove if not needed)
+  if (filter.kind && event.kind !== filter.kind) {
+    return false
+  }
+  
   return true
 }
 
@@ -158,8 +191,9 @@ export const processMessage = async (type, value, rest, socket, events, subscrib
       subscribers.set(socket, filters)
 
       filters.forEach(filter => {
-        events.filter(event => eventPassesFilter(event, filter))
-          .forEach(event => socket.send(JSON.stringify(['EVENT', filter.subscription_id, event])))
+        const matchingEvents = events.filter(event => eventPassesFilter(event, filter))
+        const limited = filter.limit ? matchingEvents.slice(-filter.limit) : matchingEvents
+        limited.forEach(event => socket.send(JSON.stringify(['EVENT', filter.subscription_id, event])))
       })
 
       socket.send(JSON.stringify(['EOSE', subscription_id]))
