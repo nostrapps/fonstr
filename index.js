@@ -69,14 +69,17 @@ export const eventPassesFilter = (event, filter) => {
     return false
   }
   
-  // Tag filters (#e, #p, etc.)
-  if (filter.tags) {
-    for (const [tagName, tagValues] of Object.entries(filter.tags)) {
+  // Tag filters (#e, #p, etc.) - NIP-01 compliant
+  // Check all filter properties that start with '#'
+  for (const [key, values] of Object.entries(filter)) {
+    if (key.startsWith('#') && key.length === 2) {
+      const tagName = key[1] // Get the letter after '#'
       const eventTagValues = event.tags
-        .filter(tag => tag[0] === tagName.substring(1))
+        .filter(tag => tag[0] === tagName)
         .map(tag => tag[1])
       
-      if (!tagValues.some(v => eventTagValues.includes(v))) {
+      // The event must have at least one matching tag value
+      if (!values.some(v => eventTagValues.includes(v))) {
         return false
       }
     }
