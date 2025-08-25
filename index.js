@@ -2,6 +2,7 @@ import { validateEvent, verifySignature } from 'nostr-tools'
 import fastify from 'fastify'
 import fastifyWebsocket from '@fastify/websocket'
 import { readFileSync } from 'fs'
+import { generateDIDDocument, isValidPubkey } from './lib/did-endpoint.js'
 
 const MAX_EVENTS = parseInt(process.env.MAX_EVENTS) || 1000  // Configurable max events to prevent memory exhaustion
 
@@ -22,6 +23,39 @@ function createServer ({ port, useHttps = false }) {
   })
 
   fi.register(fastifyWebsocket)
+  
+  // DID endpoint - serves DID documents for Nostr public keys
+  fi.get('/.well-known/did.json', async (request, reply) => {
+    const { pubkey } = request.query
+    
+    if (!pubkey) {
+      return reply.code(400).send({
+        error: 'Missing pubkey parameter',
+        message: 'Please provide a pubkey query parameter with a 64-character hex public key'
+      })
+    }
+    
+    if (!isValidPubkey(pubkey)) {
+      return reply.code(400).send({
+        error: 'Invalid pubkey format',
+        message: 'Public key must be a 64-character hexadecimal string'
+      })
+    }
+    
+    try {
+      const didDocument = generateDIDDocument(pubkey)
+      return reply
+        .header('Content-Type', 'application/json')
+        .send(didDocument)
+    } catch (error) {
+      console.error('Error generating DID document:', error)
+      return reply.code(500).send({
+        error: 'Failed to generate DID document',
+        message: error.message
+      })
+    }
+  })
+  
   fi.register(async function (fastify) {
     fastify.get('/', { websocket: true }, async (con, req) => {
       console.log('ws connection started')
