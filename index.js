@@ -4,6 +4,7 @@ import fastifyWebsocket from '@fastify/websocket'
 import { readFileSync } from 'fs'
 
 function createServer ({ port, useHttps = false }) {
+  const MAX_EVENTS = parseInt(process.env.MAX_EVENTS) || 1000  // Configurable max events to prevent memory exhaustion
   const events = []
   const subscribers = new Map()
 
@@ -119,11 +120,19 @@ export const processMessage = async (type, value, rest, socket, events, subscrib
           if (indexToReplace !== -1) {
             events[indexToReplace] = value
           } else {
+            // Check memory cap before adding new event
+            if (events.length >= MAX_EVENTS) {
+              events.shift()  // Remove oldest event (FIFO)
+            }
             events.push(value)
           }
           // ... (rest of your processing logic)
         } else {
           // Regular event, just add to the list
+          // Check memory cap before adding new event
+          if (events.length >= MAX_EVENTS) {
+            events.shift()  // Remove oldest event (FIFO)
+          }
           events.push(value)
           console.log('event ok')
           // ... (rest of your processing logic)
