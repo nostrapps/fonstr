@@ -1,20 +1,34 @@
 # Nostr DID Endpoint
 
-This server now supports the Nostr DID Method specification, providing a `.well-known/did.json` endpoint for generating DID documents from Nostr public keys.
+This server now supports the Nostr DID Method specification, providing DID document endpoints for generating DID documents from Nostr public keys.
 
 ## Usage
 
-### Request
+The server supports two URL patterns for accessing DID documents:
+
+### Method 1: Query Parameter
 ```
 GET /.well-known/did.json?pubkey={hex_public_key}
 ```
 
-### Parameters
-- `pubkey` (required): A 64-character hexadecimal Nostr public key
+### Method 2: Path Parameter
+```
+GET /.well-known/did/nostr/{hex_public_key}.json
+```
 
-### Example Request
+### Parameters
+- `hex_public_key`: A 64-character hexadecimal Nostr public key
+
+### Example Requests
+
+#### Query Parameter Format
 ```bash
 curl "http://localhost:3000/.well-known/did.json?pubkey=124c0fa99407182ece5a24fad9b7f6674902fc422843d3128d38a0afbee0fdd2"
+```
+
+#### Path Parameter Format
+```bash
+curl "http://localhost:3000/.well-known/did/nostr/124c0fa99407182ece5a24fad9b7f6674902fc422843d3128d38a0afbee0fdd2.json"
 ```
 
 ### Example Response

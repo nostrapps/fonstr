@@ -25,6 +25,7 @@ function createServer ({ port, useHttps = false }) {
   fi.register(fastifyWebsocket)
   
   // DID endpoint - serves DID documents for Nostr public keys
+  // Support query parameter format: /.well-known/did.json?pubkey={pubkey}
   fi.get('/.well-known/did.json', async (request, reply) => {
     const { pubkey } = request.query
     
@@ -34,6 +35,31 @@ function createServer ({ port, useHttps = false }) {
         message: 'Please provide a pubkey query parameter with a 64-character hex public key'
       })
     }
+    
+    if (!isValidPubkey(pubkey)) {
+      return reply.code(400).send({
+        error: 'Invalid pubkey format',
+        message: 'Public key must be a 64-character hexadecimal string'
+      })
+    }
+    
+    try {
+      const didDocument = generateDIDDocument(pubkey)
+      return reply
+        .header('Content-Type', 'application/json')
+        .send(didDocument)
+    } catch (error) {
+      console.error('Error generating DID document:', error)
+      return reply.code(500).send({
+        error: 'Failed to generate DID document',
+        message: error.message
+      })
+    }
+  })
+  
+  // DID endpoint - path parameter format: /.well-known/did/nostr/{pubkey}.json
+  fi.get('/.well-known/did/nostr/:pubkey.json', async (request, reply) => {
+    const { pubkey } = request.params
     
     if (!isValidPubkey(pubkey)) {
       return reply.code(400).send({
