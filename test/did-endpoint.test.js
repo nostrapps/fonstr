@@ -118,6 +118,69 @@ console.assert(didDocNoProfile.profile === undefined, 'DID document without prof
 
 console.log('✓ Profile functionality tests passed')
 
+// Test follows functionality
+console.log('\nTesting follows functionality...')
+
+// Test with valid follows
+const followsData = {
+  pubkeys: [
+    '32e1827635450ebb3c5a7d12c1f8e7b2b514439ac10a67eef3d9fd9c5c68e245',
+    '46fcbe3065eaf1ae7811465924e48923363ff3f526bd6f73d7c184147700e3a8'
+  ],
+  count: 2
+}
+
+const didDocWithFollows = generateDIDDocument(validPubkey, null, followsData)
+console.assert(Array.isArray(didDocWithFollows.follows), 'DID document should have follows array')
+console.assert(didDocWithFollows.follows.length === 2, 'Should have 2 follows')
+console.assert(didDocWithFollows.follows[0].startsWith('did:nostr:'), 'Follows should be DIDs')
+console.assert(didDocWithFollows.followsCount === 2, 'followsCount should match')
+
+// Test with complete DID document (profile + follows)
+const didDocComplete = generateDIDDocument(validPubkey, profileData, followsData)
+console.assert(didDocComplete.profile !== undefined, 'Complete DID should have profile')
+console.assert(Array.isArray(didDocComplete.follows), 'Complete DID should have follows')
+console.assert(didDocComplete.followsCount === 2, 'Complete DID should have followsCount')
+
+// Test with invalid pubkeys in follows (should filter out)
+const invalidFollowsData = {
+  pubkeys: [
+    '32e1827635450ebb3c5a7d12c1f8e7b2b514439ac10a67eef3d9fd9c5c68e245', // valid
+    'invalid-pubkey', // invalid
+    '46fcbe3065eaf1ae7811465924e48923363ff3f526bd6f73d7c184147700e3a8'  // valid
+  ],
+  count: 3
+}
+
+const didDocFiltered = generateDIDDocument(validPubkey, null, invalidFollowsData)
+console.assert(didDocFiltered.follows.length === 2, 'Should filter out invalid pubkeys')
+console.assert(didDocFiltered.followsCount === 3, 'followsCount should preserve original count')
+
+// Test with empty follows
+const emptyFollowsData = { pubkeys: [], count: 0 }
+const didDocEmptyFollows = generateDIDDocument(validPubkey, null, emptyFollowsData)
+console.assert(didDocEmptyFollows.follows === undefined, 'Empty follows should be removed')
+console.assert(didDocEmptyFollows.followsCount === undefined, 'Empty followsCount should be removed')
+
+// Test with truncated follows and service endpoint
+const truncatedFollowsData = {
+  pubkeys: [
+    '32e1827635450ebb3c5a7d12c1f8e7b2b514439ac10a67eef3d9fd9c5c68e245',
+    '46fcbe3065eaf1ae7811465924e48923363ff3f526bd6f73d7c184147700e3a8'
+  ],
+  count: 5234,
+  truncated: true,
+  serviceEndpoint: 'https://api.example.com/did/follows/{did}'
+}
+
+const didDocTruncated = generateDIDDocument(validPubkey, null, truncatedFollowsData)
+console.assert(didDocTruncated.follows.length === 2, 'Should include truncated follows')
+console.assert(didDocTruncated.followsCount === 5234, 'Should show total count')
+console.assert(Array.isArray(didDocTruncated.service), 'Should have service array')
+console.assert(didDocTruncated.service.some(s => s.type === 'FollowsEndpoint'), 'Should have FollowsEndpoint service')
+
+console.log('✓ Follows functionality tests passed')
+
 console.log('\n✅ All tests passed!')
 
 // Output example DID documents
@@ -126,3 +189,6 @@ console.log(JSON.stringify(didDoc, null, 2))
 
 console.log('\nExample DID Document with Profile:')
 console.log(JSON.stringify(didDocWithProfile, null, 2))
+
+console.log('\nExample Complete DID Document (Profile + Follows):')
+console.log(JSON.stringify(didDocComplete, null, 2))

@@ -63,7 +63,37 @@ function createServer ({ port, useHttps = false }) {
         }
       }
       
-      const didDocument = generateDIDDocument(pubkey, profile)
+      // Find most recent contact list event (kind 3) for this pubkey
+      const contactListEvents = events.filter(e => 
+        e.kind === 3 && e.pubkey === pubkey
+      )
+      const contactListEvent = contactListEvents.length > 0 
+        ? contactListEvents.reduce((latest, current) => 
+            current.created_at > latest.created_at ? current : latest
+          )
+        : null
+      
+      // Parse follows if available
+      let follows = null
+      if (contactListEvent) {
+        try {
+          // Extract pubkeys from kind 3 event tags (p tags)
+          const followPubkeys = contactListEvent.tags
+            .filter(tag => tag[0] === 'p' && tag[1] && /^[0-9a-f]{64}$/i.test(tag[1]))
+            .map(tag => tag[1].toLowerCase())
+          
+          if (followPubkeys.length > 0) {
+            follows = {
+              pubkeys: followPubkeys,
+              count: followPubkeys.length
+            }
+          }
+        } catch (e) {
+          // Invalid contact list, ignore
+        }
+      }
+      
+      const didDocument = generateDIDDocument(pubkey, profile, follows)
       return reply
         .header('Content-Type', 'application/json')
         .send(didDocument)
@@ -107,7 +137,37 @@ function createServer ({ port, useHttps = false }) {
         }
       }
       
-      const didDocument = generateDIDDocument(pubkey, profile)
+      // Find most recent contact list event (kind 3) for this pubkey
+      const contactListEvents = events.filter(e => 
+        e.kind === 3 && e.pubkey === pubkey
+      )
+      const contactListEvent = contactListEvents.length > 0 
+        ? contactListEvents.reduce((latest, current) => 
+            current.created_at > latest.created_at ? current : latest
+          )
+        : null
+      
+      // Parse follows if available
+      let follows = null
+      if (contactListEvent) {
+        try {
+          // Extract pubkeys from kind 3 event tags (p tags)
+          const followPubkeys = contactListEvent.tags
+            .filter(tag => tag[0] === 'p' && tag[1] && /^[0-9a-f]{64}$/i.test(tag[1]))
+            .map(tag => tag[1].toLowerCase())
+          
+          if (followPubkeys.length > 0) {
+            follows = {
+              pubkeys: followPubkeys,
+              count: followPubkeys.length
+            }
+          }
+        } catch (e) {
+          // Invalid contact list, ignore
+        }
+      }
+      
+      const didDocument = generateDIDDocument(pubkey, profile, follows)
       return reply
         .header('Content-Type', 'application/json')
         .send(didDocument)
