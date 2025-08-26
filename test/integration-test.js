@@ -68,7 +68,7 @@ console.assert(didWithProfile.profile.name === 'Alice', 'Profile name should mat
 console.assert(didWithProfile.profile.timestamp === 1737906600, 'Profile timestamp should match created_at')
 
 // Test 2: Pubkey without profile data
-const unknownPubkey = 'unknown0000000000000000000000000000000000000000000000000000000000'
+const unknownPubkey = '0000000000000000000000000000000000000000000000000000000000000000'
 const didWithoutProfile = simulateDIDEndpoint(unknownPubkey, events)
 console.assert(didWithoutProfile.profile === undefined, 'Should not have profile when no kind 0 event exists')
 
