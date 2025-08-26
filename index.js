@@ -30,17 +30,25 @@ function createServer ({ port, useHttps = false }) {
     const { pubkey } = request.query
     
     if (!pubkey) {
-      return reply.code(400).send({
-        error: 'Missing pubkey parameter',
-        message: 'Please provide a pubkey query parameter with a 64-character hex public key'
-      })
+      return reply.code(400)
+        .header('Access-Control-Allow-Origin', '*')
+        .header('Access-Control-Allow-Methods', 'GET, OPTIONS')
+        .header('Access-Control-Allow-Headers', 'Content-Type')
+        .send({
+          error: 'Missing pubkey parameter',
+          message: 'Please provide a pubkey query parameter with a 64-character hex public key'
+        })
     }
     
     if (!isValidPubkey(pubkey)) {
-      return reply.code(400).send({
-        error: 'Invalid pubkey format',
-        message: 'Public key must be a 64-character hexadecimal string'
-      })
+      return reply.code(400)
+        .header('Access-Control-Allow-Origin', '*')
+        .header('Access-Control-Allow-Methods', 'GET, OPTIONS')
+        .header('Access-Control-Allow-Headers', 'Content-Type')
+        .send({
+          error: 'Invalid pubkey format',
+          message: 'Public key must be a 64-character hexadecimal string'
+        })
     }
     
     try {
@@ -96,14 +104,31 @@ function createServer ({ port, useHttps = false }) {
       const didDocument = generateDIDDocument(pubkey, profile, follows)
       return reply
         .header('Content-Type', 'application/json')
+        .header('Access-Control-Allow-Origin', '*')
+        .header('Access-Control-Allow-Methods', 'GET, OPTIONS')
+        .header('Access-Control-Allow-Headers', 'Content-Type')
         .send(didDocument)
     } catch (error) {
       console.error('Error generating DID document:', error)
-      return reply.code(500).send({
-        error: 'Failed to generate DID document',
-        message: error.message
-      })
+      return reply.code(500)
+        .header('Access-Control-Allow-Origin', '*')
+        .header('Access-Control-Allow-Methods', 'GET, OPTIONS')
+        .header('Access-Control-Allow-Headers', 'Content-Type')
+        .send({
+          error: 'Failed to generate DID document',
+          message: error.message
+        })
     }
+  })
+  
+  // OPTIONS support for CORS preflight - query parameter format
+  fi.options('/.well-known/did.json', async (request, reply) => {
+    return reply
+      .header('Access-Control-Allow-Origin', '*')
+      .header('Access-Control-Allow-Methods', 'GET, OPTIONS')
+      .header('Access-Control-Allow-Headers', 'Content-Type')
+      .code(204)
+      .send()
   })
   
   // DID endpoint - path parameter format: /.well-known/did/nostr/{pubkey}.json
@@ -111,10 +136,14 @@ function createServer ({ port, useHttps = false }) {
     const { pubkey } = request.params
     
     if (!isValidPubkey(pubkey)) {
-      return reply.code(400).send({
-        error: 'Invalid pubkey format',
-        message: 'Public key must be a 64-character hexadecimal string'
-      })
+      return reply.code(400)
+        .header('Access-Control-Allow-Origin', '*')
+        .header('Access-Control-Allow-Methods', 'GET, OPTIONS')
+        .header('Access-Control-Allow-Headers', 'Content-Type')
+        .send({
+          error: 'Invalid pubkey format',
+          message: 'Public key must be a 64-character hexadecimal string'
+        })
     }
     
     try {
@@ -170,14 +199,31 @@ function createServer ({ port, useHttps = false }) {
       const didDocument = generateDIDDocument(pubkey, profile, follows)
       return reply
         .header('Content-Type', 'application/json')
+        .header('Access-Control-Allow-Origin', '*')
+        .header('Access-Control-Allow-Methods', 'GET, OPTIONS')
+        .header('Access-Control-Allow-Headers', 'Content-Type')
         .send(didDocument)
     } catch (error) {
       console.error('Error generating DID document:', error)
-      return reply.code(500).send({
-        error: 'Failed to generate DID document',
-        message: error.message
-      })
+      return reply.code(500)
+        .header('Access-Control-Allow-Origin', '*')
+        .header('Access-Control-Allow-Methods', 'GET, OPTIONS')
+        .header('Access-Control-Allow-Headers', 'Content-Type')
+        .send({
+          error: 'Failed to generate DID document',
+          message: error.message
+        })
     }
+  })
+  
+  // OPTIONS support for CORS preflight - path parameter format
+  fi.options('/.well-known/did/nostr/:pubkey.json', async (request, reply) => {
+    return reply
+      .header('Access-Control-Allow-Origin', '*')
+      .header('Access-Control-Allow-Methods', 'GET, OPTIONS')
+      .header('Access-Control-Allow-Headers', 'Content-Type')
+      .code(204)
+      .send()
   })
   
   fi.register(async function (fastify) {
