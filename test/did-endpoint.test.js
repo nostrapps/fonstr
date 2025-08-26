@@ -72,8 +72,57 @@ invalidPubkeys.forEach(pubkey => {
 })
 console.log('✓ Error handling tests passed')
 
+// Test profile functionality
+console.log('\nTesting profile functionality...')
+
+// Test with valid profile
+const profileData = {
+  name: 'Alice',
+  about: 'Building the decentralized social web',
+  picture: 'https://example.com/alice.jpg',
+  nip05: 'alice@example.com',
+  lud16: 'alice@getalby.com',
+  website: 'https://alice.example.com',
+  timestamp: 1737906600
+}
+
+const didDocWithProfile = generateDIDDocument(validPubkey, profileData)
+console.assert(didDocWithProfile.profile !== undefined, 'DID document should have profile field')
+console.assert(didDocWithProfile.profile.name === 'Alice', 'Profile name should match')
+console.assert(didDocWithProfile.profile.about === 'Building the decentralized social web', 'Profile about should match')
+console.assert(didDocWithProfile.profile.picture === 'https://example.com/alice.jpg', 'Profile picture should match')
+console.assert(didDocWithProfile.profile.nip05 === 'alice@example.com', 'Profile nip05 should match')
+console.assert(didDocWithProfile.profile.lud16 === 'alice@getalby.com', 'Profile lud16 should match')
+console.assert(didDocWithProfile.profile.website === 'https://alice.example.com', 'Profile website should match')
+console.assert(didDocWithProfile.profile.timestamp === 1737906600, 'Profile timestamp should match')
+
+// Test with partial profile
+const partialProfile = { name: 'Bob' }
+const didDocPartial = generateDIDDocument(validPubkey, partialProfile)
+console.assert(didDocPartial.profile.name === 'Bob', 'Partial profile name should match')
+console.assert(didDocPartial.profile.about === undefined, 'Partial profile should not have undefined fields')
+
+// Test with empty profile
+const emptyProfile = {}
+const didDocEmpty = generateDIDDocument(validPubkey, emptyProfile)
+console.assert(didDocEmpty.profile === undefined, 'Empty profile should be removed')
+
+// Test with invalid profile data types
+const invalidProfile = { name: 123, about: null, timestamp: 'invalid' }
+const didDocInvalid = generateDIDDocument(validPubkey, invalidProfile)
+console.assert(didDocInvalid.profile === undefined, 'Invalid profile data should result in no profile')
+
+// Test without profile (backward compatibility)
+const didDocNoProfile = generateDIDDocument(validPubkey)
+console.assert(didDocNoProfile.profile === undefined, 'DID document without profile should work')
+
+console.log('✓ Profile functionality tests passed')
+
 console.log('\n✅ All tests passed!')
 
-// Output example DID document
-console.log('\nExample DID Document:')
+// Output example DID documents
+console.log('\nExample Minimal DID Document:')
 console.log(JSON.stringify(didDoc, null, 2))
+
+console.log('\nExample DID Document with Profile:')
+console.log(JSON.stringify(didDocWithProfile, null, 2))

@@ -44,7 +44,26 @@ function createServer ({ port, useHttps = false }) {
     }
     
     try {
-      const didDocument = generateDIDDocument(pubkey)
+      // Find metadata event (kind 0) for this pubkey
+      const metadataEvent = events.find(e => 
+        e.kind === 0 && e.pubkey === pubkey
+      )
+      
+      // Parse metadata if available
+      let profile = null
+      if (metadataEvent) {
+        try {
+          const metadata = JSON.parse(metadataEvent.content)
+          profile = {
+            ...metadata,
+            timestamp: metadataEvent.created_at
+          }
+        } catch (e) {
+          // Invalid metadata, ignore
+        }
+      }
+      
+      const didDocument = generateDIDDocument(pubkey, profile)
       return reply
         .header('Content-Type', 'application/json')
         .send(didDocument)
@@ -69,7 +88,26 @@ function createServer ({ port, useHttps = false }) {
     }
     
     try {
-      const didDocument = generateDIDDocument(pubkey)
+      // Find metadata event (kind 0) for this pubkey
+      const metadataEvent = events.find(e => 
+        e.kind === 0 && e.pubkey === pubkey
+      )
+      
+      // Parse metadata if available
+      let profile = null
+      if (metadataEvent) {
+        try {
+          const metadata = JSON.parse(metadataEvent.content)
+          profile = {
+            ...metadata,
+            timestamp: metadataEvent.created_at
+          }
+        } catch (e) {
+          // Invalid metadata, ignore
+        }
+      }
+      
+      const didDocument = generateDIDDocument(pubkey, profile)
       return reply
         .header('Content-Type', 'application/json')
         .send(didDocument)
