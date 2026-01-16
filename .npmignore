@@ -17,6 +17,10 @@ docs/
 # Admin interface (not needed for wrapper)
 admin.html
 
+# Website assets (not needed in npm package)
+og-image.svg
+og-image.png
+
 # Build/deploy files
 bin/
 deploy.sh
