@@ -1,14 +1,14 @@
 {
   "name": "fonstr",
-  "version": "0.0.13",
-  "description": "fonstr",
+  "version": "0.1.0",
+  "description": "Nostr relay + web server - Just works on phones, servers, everywhere",
   "main": "index.js",
   "type": "module",
   "bin": {
     "fonstr": "./index.js"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node index.js"
   },
   "repository": {
     "type": "git",
@@ -18,7 +18,13 @@
     "nostr",
     "relay",
     "phone",
-    "termux"
+    "termux",
+    "web-server",
+    "solid",
+    "decentralized",
+    "nip-01",
+    "nip-11",
+    "nip-98"
   ],
   "author": "Melvin Carvalho",
   "license": "MIT",
@@ -26,12 +32,10 @@
     "url": "https://github.com/nostrapps/fonstr/issues"
   },
   "homepage": "https://github.com/nostrapps/fonstr#readme",
+  "engines": {
+    "node": ">=18.0.0"
+  },
   "dependencies": {
-    "@fastify/websocket": "^8.0.0",
-    "fastify": "^4.17.0",
-    "fs": "^0.0.1-security",
-    "https": "^1.0.0",
-    "minimist": "^1.2.8",
-    "nostr-tools": "^1.10.1"
+    "jspod": "^0.0.4"
   }
 }
