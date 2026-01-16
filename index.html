@@ -491,8 +491,11 @@
                 <code>npx fonstr</code>
                 <div class="comment">That's it. Your relay is live at ws://localhost:4444/relay</div>
             </div>
-            <p style="color: var(--text-light); font-size: 1.1rem; margin-top: 2rem;">
+            <p style="color: var(--text-light); font-size: 1.1rem; margin-top: 1rem;">
                 No installation. No dependencies. No configuration. Just works.
+            </p>
+            <p style="margin-top: 1.5rem; padding: 1rem; background: rgba(99, 102, 241, 0.1); border-radius: 0.5rem; display: inline-block;">
+                📱 <strong>On Android?</strong> See our <a href="/mobile-guide.html" style="color: var(--primary); font-weight: 600; text-decoration: none;">step-by-step mobile guide</a> instead
             </p>
         </div>
     </section>
@@ -569,6 +572,7 @@
             <h2>Quick Examples</h2>
             <div class="example-tabs">
                 <div class="tab active" onclick="showExample('basic')">Basic</div>
+                <div class="tab" onclick="showExample('android')">📱 Android</div>
                 <div class="tab" onclick="showExample('custom')">Custom Port</div>
                 <div class="tab" onclick="showExample('landing')">With Landing Page</div>
                 <div class="tab" onclick="showExample('production')">Production</div>
@@ -582,6 +586,30 @@ npx fonstr
 # Done! Your relay is live at:
 # - Nostr relay: ws://localhost:4444/relay
 # - Web server: http://localhost:4444</code></pre>
+            </div>
+
+            <div id="example-android" class="example-content" style="display: none;">
+                <h3 style="margin-bottom: 1rem; color: var(--primary);">Run on Android Phone (Under 90 seconds)</h3>
+                <p style="margin-bottom: 1rem; color: var(--text-light);">
+                    First-time setup on your Android phone:
+                </p>
+                <pre><code># 1. Install Termux from F-Droid (not Play Store!)
+#    Download F-Droid: https://f-droid.org
+
+# 2. Open Termux and update packages
+pkg update && pkg upgrade
+
+# 3. Install Node.js
+pkg install nodejs-lts
+
+# 4. Run your relay!
+npx fonstr
+
+# ✅ Done! Your relay is running on your phone!</code></pre>
+                <p style="margin-top: 1rem; background: #f0fdf4; padding: 1rem; border-radius: 0.5rem; border-left: 4px solid #10b981;">
+                    <strong>Need detailed instructions?</strong> Check out our complete
+                    <a href="/mobile-guide.html" style="color: var(--primary); font-weight: 600;">step-by-step mobile guide →</a>
+                </p>
             </div>
 
             <div id="example-custom" class="example-content" style="display: none;">
