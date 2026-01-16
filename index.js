@@ -155,13 +155,30 @@ if (!existsSync(indexPath)) {
   writeFileSync(indexPath, welcomePage, 'utf-8')
 }
 
+// Create public ACL for root to allow public access to index.html
+const aclPath = join(dataRoot, '.acl')
+if (!existsSync(aclPath)) {
+  const publicAcl = `@prefix acl: <http://www.w3.org/ns/auth/acl#> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+
+<#public>
+    a acl:Authorization ;
+    acl:accessTo <./> ;
+    acl:default <./> ;
+    acl:mode acl:Read ;
+    acl:agentClass foaf:Agent .
+`
+  writeFileSync(aclPath, publicAcl, 'utf-8')
+}
+
 // Build JSS arguments with Nostr-first defaults
 const jssArgs = [
   'start',
   '--port', port,
   '--root', dataRoot,
   '--nostr',  // Enable Nostr relay
-  '--no-multiuser',
+  '--single-user',  // Single-user mode (simpler, no registration)
+  '--no-idp',  // Disable Identity Provider
   ...args.filter(arg => arg.startsWith('-'))
 ]
 
