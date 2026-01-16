@@ -33,6 +33,10 @@ CNAME
 .git/
 .github/
 node_modules/
+.claude/
+
+# Data directories (created at runtime)
+fonstr-data/
 
 # Only include:
 # - index.js (wrapper)
