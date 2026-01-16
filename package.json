@@ -1,6 +1,6 @@
 {
   "name": "fonstr",
-  "version": "0.0.15",
+  "version": "0.0.16",
   "description": "Nostr relay + web server - Just works on phones, servers, everywhere",
   "main": "index.js",
   "type": "module",

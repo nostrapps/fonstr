@@ -1,0 +1,37 @@
+# Exclude legacy implementation and unnecessary files from npm package
+
+# Legacy code
+index.js.legacy
+
+# Test files
+test/
+*.test.js
+
+# Library code (not needed for wrapper)
+lib/
+did-nostr/
+
+# Documentation (available on GitHub)
+docs/
+
+# Admin interface (not needed for wrapper)
+admin.html
+
+# Build/deploy files
+bin/
+deploy.sh
+Dockerfile
+.gitignore
+CNAME
+
+# Development files
+.git/
+.github/
+node_modules/
+
+# Only include:
+# - index.js (wrapper)
+# - package.json
+# - README.md
+# - LICENSE
+# - MIGRATION.md
