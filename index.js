@@ -23,13 +23,16 @@ const port = args.find(arg => !arg.startsWith('-')) || process.env.PORT || '4444
 
 // Build JSS arguments with Nostr-first defaults
 const jssArgs = [
+  'start',
   '--port', port,
   '--root', process.env.DATA_ROOT || './fonstr-data',
+  '--nostr',  // Enable Nostr relay
+  '--no-multiuser',
   ...args.filter(arg => arg.startsWith('-'))
 ]
 
-// Spawn jspod (which wraps JSS)
-const jspod = spawn('jspod', jssArgs, {
+// Spawn jss directly (from jspod dependency)
+const jss = spawn('jss', jssArgs, {
   stdio: 'inherit',
   env: {
     ...process.env,
@@ -37,20 +40,20 @@ const jspod = spawn('jspod', jssArgs, {
   }
 })
 
-jspod.on('error', (err) => {
+jss.on('error', (err) => {
   console.error('Failed to start fonstr:', err.message)
   process.exit(1)
 })
 
-jspod.on('close', (code) => {
+jss.on('close', (code) => {
   process.exit(code || 0)
 })
 
 // Handle termination signals
 process.on('SIGINT', () => {
-  jspod.kill('SIGINT')
+  jss.kill('SIGINT')
 })
 
 process.on('SIGTERM', () => {
-  jspod.kill('SIGTERM')
+  jss.kill('SIGTERM')
 })
