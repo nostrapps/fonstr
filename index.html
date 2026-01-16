@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Run your own Nostr relay in one command. Works on phones, servers, everywhere. Zero config, pure JavaScript, under 90 seconds.">
+    <meta name="keywords" content="nostr, relay, nostr relay, decentralized, web3, phone relay, termux, android">
+    <title>fonstr - Run Your Own Nostr Relay in One Line</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #6366f1;
+            --primary-light: #818cf8;
+            --primary-dark: #4f46e5;
+            --secondary: #8b5cf6;
+            --accent: #ec4899;
+            --bg: #fafbfc;
+            --bg-secondary: #f3f4f6;
+            --text: #1f2937;
+            --text-light: #6b7280;
+            --border: #e5e7eb;
+            --success: #10b981;
+            --code-bg: #f9fafb;
+            --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+            line-height: 1.6;
+            color: var(--text);
+            background: var(--bg);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        /* Header */
+        header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            padding: 1rem 0;
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.75rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logo-icon {
+            font-size: 2rem;
+        }
+
+        .header-links {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .header-links a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: opacity 0.2s;
+        }
+
+        .header-links a:hover {
+            opacity: 0.8;
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            padding: 6rem 0;
+            text-align: center;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            line-height: 1.2;
+        }
+
+        .hero .subtitle {
+            font-size: 1.5rem;
+            opacity: 0.95;
+            margin-bottom: 3rem;
+            font-weight: 300;
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 0.875rem 2rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+            border: none;
+            font-size: 1rem;
+        }
+
+        .btn-primary {
+            background: white;
+            color: var(--primary);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            backdrop-filter: blur(10px);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        /* Quick Start */
+        .quick-start {
+            background: var(--bg-secondary);
+            padding: 4rem 0;
+            text-align: center;
+        }
+
+        .quick-start h2 {
+            font-size: 2.5rem;
+            margin-bottom: 2rem;
+            color: var(--text);
+        }
+
+        .code-block {
+            background: var(--code-bg);
+            border: 2px solid var(--border);
+            border-radius: 1rem;
+            padding: 2rem;
+            margin: 2rem auto;
+            max-width: 600px;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .code-block code {
+            font-family: 'Monaco', 'Menlo', 'Courier New', monospace;
+            font-size: 1.5rem;
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .code-block .comment {
+            color: var(--text-light);
+            font-size: 1rem;
+            margin-top: 1rem;
+            font-style: italic;
+        }
+
+        /* Features */
+        .features {
+            padding: 6rem 0;
+        }
+
+        .features h2 {
+            font-size: 2.5rem;
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .feature-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 1rem;
+            box-shadow: var(--shadow);
+            transition: all 0.3s;
+            border: 1px solid var(--border);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .feature-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .feature-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: var(--primary);
+        }
+
+        .feature-card p {
+            color: var(--text-light);
+            line-height: 1.7;
+        }
+
+        /* Stats */
+        .stats {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            padding: 4rem 0;
+            text-align: center;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 3rem;
+            margin-top: 2rem;
+        }
+
+        .stat {
+            padding: 1rem;
+        }
+
+        .stat-number {
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            font-size: 1rem;
+            opacity: 0.9;
+        }
+
+        /* Examples */
+        .examples {
+            padding: 6rem 0;
+            background: var(--bg-secondary);
+        }
+
+        .examples h2 {
+            font-size: 2.5rem;
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .example-tabs {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .tab {
+            padding: 0.75rem 1.5rem;
+            background: white;
+            border: 2px solid var(--border);
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+
+        .tab:hover {
+            border-color: var(--primary);
+        }
+
+        .tab.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .example-content {
+            background: white;
+            border-radius: 1rem;
+            padding: 2rem;
+            box-shadow: var(--shadow-lg);
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .example-content pre {
+            background: var(--code-bg);
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            overflow-x: auto;
+            border: 1px solid var(--border);
+        }
+
+        .example-content code {
+            font-family: 'Monaco', 'Menlo', 'Courier New', monospace;
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        /* CTA Section */
+        .cta-section {
+            background: white;
+            padding: 6rem 0;
+            text-align: center;
+        }
+
+        .cta-section h2 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .cta-section p {
+            font-size: 1.25rem;
+            color: var(--text-light);
+            margin-bottom: 2rem;
+        }
+
+        .github-star {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 1rem 2rem;
+            background: var(--text);
+            color: white;
+            text-decoration: none;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            transition: all 0.2s;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .github-star:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+
+        /* Footer */
+        footer {
+            background: var(--text);
+            color: white;
+            padding: 3rem 0 1rem;
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .footer-section h4 {
+            margin-bottom: 1rem;
+            font-size: 1.25rem;
+        }
+
+        .footer-section ul {
+            list-style: none;
+        }
+
+        .footer-section ul li {
+            margin-bottom: 0.5rem;
+        }
+
+        .footer-section a {
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .footer-section a:hover {
+            color: white;
+        }
+
+        .footer-bottom {
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: 2rem;
+            text-align: center;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+
+            .hero .subtitle {
+                font-size: 1.25rem;
+            }
+
+            .code-block code {
+                font-size: 1.25rem;
+            }
+
+            .header-links {
+                display: none;
+            }
+
+            .features h2, .examples h2, .cta-section h2 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <span class="logo-icon">⚡</span>
+                    <span>fonstr</span>
+                </div>
+                <nav class="header-links">
+                    <a href="#features">Features</a>
+                    <a href="#examples">Examples</a>
+                    <a href="https://github.com/nostrapps/fonstr" target="_blank">GitHub</a>
+                    <a href="https://www.npmjs.com/package/fonstr" target="_blank">npm</a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <section class="hero">
+        <div class="container">
+            <h1>Run Your Own Nostr Relay<br>in One Line</h1>
+            <p class="subtitle">Zero config. Pure JavaScript. Works everywhere.</p>
+            <div class="cta-buttons">
+                <a href="#quick-start" class="btn btn-primary">Get Started →</a>
+                <a href="https://github.com/nostrapps/fonstr" class="btn btn-secondary">⭐ Star on GitHub</a>
+            </div>
+        </div>
+    </section>
+
+    <section id="quick-start" class="quick-start">
+        <div class="container">
+            <h2>Get Started in 10 Seconds</h2>
+            <div class="code-block">
+                <code>npx fonstr</code>
+                <div class="comment">That's it. Your relay is live at ws://localhost:4444/relay</div>
+            </div>
+            <p style="color: var(--text-light); font-size: 1.1rem; margin-top: 2rem;">
+                No installation. No dependencies. No configuration. Just works.
+            </p>
+        </div>
+    </section>
+
+    <section class="stats">
+        <div class="container">
+            <div class="stats-grid">
+                <div class="stat">
+                    <div class="stat-number">&lt;90s</div>
+                    <div class="stat-label">Install on Android</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-number">~3s</div>
+                    <div class="stat-label">Startup Time</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-number">1,500+</div>
+                    <div class="stat-label">Requests/Second</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-number">0</div>
+                    <div class="stat-label">Configuration Files</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="features" class="features">
+        <div class="container">
+            <h2>Why Choose fonstr?</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">📱</div>
+                    <h3>Works on Your Phone</h3>
+                    <p>Run a Nostr relay on Android with Termux. Under 90 seconds from zero to running. No other relay can do this.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">⚡</div>
+                    <h3>Zero Config</h3>
+                    <p>One command and you're done. No config files, no setup scripts, no documentation to read. It just works.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">🌐</div>
+                    <h3>Web Server Included</h3>
+                    <p>Not just a relay. Serve your landing page, build APIs, host static files. Full web server built-in.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">🔌</div>
+                    <h3>NIP Compliant</h3>
+                    <p>NIP-01 (core protocol), NIP-11 (relay info), NIP-98 (HTTP auth). Event filtering, subscriptions, real-time updates.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">🚀</div>
+                    <h3>Pure JavaScript</h3>
+                    <p>No native modules, no compilation, no build tools. Works on Windows, macOS, Linux, Raspberry Pi, and phones.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">🔒</div>
+                    <h3>Production Ready</h3>
+                    <p>HTTPS/WSS support, rate limiting, memory protection. Scale to thousands of connections with confidence.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="examples" class="examples">
+        <div class="container">
+            <h2>Quick Examples</h2>
+            <div class="example-tabs">
+                <div class="tab active" onclick="showExample('basic')">Basic</div>
+                <div class="tab" onclick="showExample('custom')">Custom Port</div>
+                <div class="tab" onclick="showExample('landing')">With Landing Page</div>
+                <div class="tab" onclick="showExample('production')">Production</div>
+            </div>
+
+            <div id="example-basic" class="example-content">
+                <h3 style="margin-bottom: 1rem; color: var(--primary);">Basic Relay (10 seconds)</h3>
+                <pre><code># Run on default port 4444
+npx fonstr
+
+# Done! Your relay is live at:
+# - Nostr relay: ws://localhost:4444/relay
+# - Web server: http://localhost:4444</code></pre>
+            </div>
+
+            <div id="example-custom" class="example-content" style="display: none;">
+                <h3 style="margin-bottom: 1rem; color: var(--primary);">Custom Port</h3>
+                <pre><code># Run on port 8080
+npx fonstr 8080
+
+# Or use environment variable
+PORT=8080 npx fonstr</code></pre>
+            </div>
+
+            <div id="example-landing" class="example-content" style="display: none;">
+                <h3 style="margin-bottom: 1rem; color: var(--primary);">With Landing Page</h3>
+                <pre><code># Create your landing page
+mkdir fonstr-data
+cat > fonstr-data/index.html << 'EOF'
+&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;&lt;title&gt;My Nostr Relay&lt;/title&gt;&lt;/head&gt;
+&lt;body&gt;
+  &lt;h1&gt;⚡ Welcome to My Relay&lt;/h1&gt;
+  &lt;p&gt;Connect: ws://localhost:4444/relay&lt;/p&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+EOF
+
+# Start relay
+npx fonstr
+
+# Visit http://localhost:4444 to see your page!</code></pre>
+            </div>
+
+            <div id="example-production" class="example-content" style="display: none;">
+                <h3 style="margin-bottom: 1rem; color: var(--primary);">Production with HTTPS</h3>
+                <pre><code># Get SSL certificates (Let's Encrypt)
+# Place fullchain.pem and privkey.pem in current directory
+
+# Run with HTTPS
+npx fonstr --https --port 443
+
+# Now accessible at wss://yourdomain.com/relay</code></pre>
+            </div>
+        </div>
+    </section>
+
+    <section class="cta-section">
+        <div class="container">
+            <h2>Ready to Run Your Own Relay?</h2>
+            <p>Join the decentralized web. One command away.</p>
+            <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; margin-top: 2rem;">
+                <div class="code-block" style="margin: 0; max-width: 400px;">
+                    <code>npx fonstr</code>
+                </div>
+            </div>
+            <div style="margin-top: 3rem;">
+                <a href="https://github.com/nostrapps/fonstr" class="github-star" target="_blank">
+                    ⭐ Star on GitHub
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>fonstr</h4>
+                    <p style="color: rgba(255, 255, 255, 0.8); margin-top: 0.5rem;">
+                        The easiest way to run a Nostr relay. Period.
+                    </p>
+                </div>
+
+                <div class="footer-section">
+                    <h4>Resources</h4>
+                    <ul>
+                        <li><a href="https://github.com/nostrapps/fonstr">GitHub</a></li>
+                        <li><a href="https://www.npmjs.com/package/fonstr">npm Package</a></li>
+                        <li><a href="https://github.com/nostrapps/fonstr/blob/gh-pages/README.md">Documentation</a></li>
+                        <li><a href="https://github.com/nostrapps/fonstr/issues">Issues</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-section">
+                    <h4>Nostr</h4>
+                    <ul>
+                        <li><a href="https://github.com/nostr-protocol/nostr">Nostr Protocol</a></li>
+                        <li><a href="https://github.com/nostr-protocol/nips">NIPs</a></li>
+                        <li><a href="https://github.com/aljazceru/awesome-nostr">Awesome Nostr</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-section">
+                    <h4>Powered By</h4>
+                    <ul>
+                        <li><a href="https://github.com/JavaScriptSolidServer/JavaScriptSolidServer">JavaScriptSolidServer</a></li>
+                        <li><a href="https://github.com/nbd-wtf/nostr-tools">nostr-tools</a></li>
+                        <li><a href="https://fastify.io">Fastify</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <p>MIT License &copy; 2024 fonstr • Built for the decentralized web</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        function showExample(id) {
+            // Hide all examples
+            document.querySelectorAll('.example-content').forEach(el => {
+                el.style.display = 'none';
+            });
+
+            // Remove active class from all tabs
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+
+            // Show selected example
+            document.getElementById('example-' + id).style.display = 'block';
+
+            // Add active class to clicked tab
+            event.target.classList.add('active');
+        }
+    </script>
+</body>
+</html>

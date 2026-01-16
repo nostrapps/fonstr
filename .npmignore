@@ -31,6 +31,7 @@ node_modules/
 
 # Only include:
 # - index.js (wrapper)
+# - index.html (landing page)
 # - package.json
 # - README.md
 # - LICENSE
