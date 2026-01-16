@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Step-by-step guide to running a Nostr relay on your Android phone using Termux and fonstr. Complete beginner's tutorial.">
+    <title>Run fonstr on Your Phone - Mobile Guide | fonstr</title>
+
+    <!-- Open Graph Protocol -->
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="http://fonstr.com/mobile-guide.html">
+    <meta property="og:title" content="Run a Nostr Relay on Your Phone - Mobile Guide">
+    <meta property="og:description" content="Step-by-step guide to running a Nostr relay on your Android phone using Termux. No technical knowledge required.">
+    <meta property="og:image" content="http://fonstr.com/og-image.png">
+
+    <meta name="theme-color" content="#6366f1">
+    <link rel="canonical" href="http://fonstr.com/mobile-guide.html">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #6366f1;
+            --primary-light: #818cf8;
+            --secondary: #8b5cf6;
+            --bg: #fafbfc;
+            --bg-secondary: #f3f4f6;
+            --text: #1f2937;
+            --text-light: #6b7280;
+            --border: #e5e7eb;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --code-bg: #f9fafb;
+            --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+            line-height: 1.7;
+            color: var(--text);
+            background: var(--bg);
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            padding: 1rem 0;
+            box-shadow: var(--shadow);
+        }
+
+        .header .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: white;
+            text-decoration: none;
+        }
+
+        .back-link {
+            color: white;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            background: rgba(255, 255, 255, 0.2);
+            transition: all 0.2s;
+        }
+
+        .back-link:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .hero {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            padding: 4rem 0;
+            text-align: center;
+        }
+
+        .hero h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+        }
+
+        .hero p {
+            font-size: 1.25rem;
+            opacity: 0.95;
+        }
+
+        .content {
+            padding: 4rem 0;
+        }
+
+        .step {
+            background: white;
+            border-radius: 1rem;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow);
+            border-left: 4px solid var(--primary);
+        }
+
+        .step-number {
+            display: inline-block;
+            background: var(--primary);
+            color: white;
+            width: 2.5rem;
+            height: 2.5rem;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 2.5rem;
+            font-weight: 700;
+            margin-right: 1rem;
+            font-size: 1.25rem;
+        }
+
+        .step h2 {
+            display: inline-block;
+            font-size: 1.75rem;
+            color: var(--text);
+            margin-bottom: 1rem;
+        }
+
+        .step p {
+            margin-bottom: 1rem;
+            color: var(--text-light);
+        }
+
+        .step ul {
+            margin-left: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .step li {
+            margin-bottom: 0.5rem;
+            color: var(--text-light);
+        }
+
+        code {
+            background: var(--code-bg);
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            font-family: 'Monaco', 'Menlo', 'Courier New', monospace;
+            font-size: 0.9em;
+            color: var(--primary);
+            border: 1px solid var(--border);
+        }
+
+        pre {
+            background: var(--code-bg);
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            overflow-x: auto;
+            margin: 1rem 0;
+            border: 1px solid var(--border);
+        }
+
+        pre code {
+            background: none;
+            padding: 0;
+            border: none;
+            color: var(--text);
+        }
+
+        .note {
+            background: #fffbeb;
+            border-left: 4px solid var(--warning);
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin: 1rem 0;
+        }
+
+        .note-title {
+            font-weight: 600;
+            color: #92400e;
+            margin-bottom: 0.5rem;
+        }
+
+        .note p {
+            color: #92400e;
+            margin: 0;
+        }
+
+        .success {
+            background: #f0fdf4;
+            border-left: 4px solid var(--success);
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin: 1rem 0;
+        }
+
+        .success p {
+            color: #166534;
+            margin: 0;
+        }
+
+        .screenshot {
+            border: 2px solid var(--border);
+            border-radius: 0.5rem;
+            max-width: 100%;
+            margin: 1rem 0;
+        }
+
+        .troubleshooting {
+            background: var(--bg-secondary);
+            padding: 3rem 0;
+        }
+
+        .troubleshooting h2 {
+            font-size: 2rem;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .faq-item {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1rem;
+            box-shadow: var(--shadow);
+        }
+
+        .faq-item h3 {
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .faq-item p {
+            color: var(--text-light);
+        }
+
+        footer {
+            background: var(--text);
+            color: white;
+            padding: 2rem 0;
+            text-align: center;
+        }
+
+        footer a {
+            color: var(--primary-light);
+            text-decoration: none;
+        }
+
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2rem;
+            }
+
+            .step h2 {
+                display: block;
+                margin-top: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <a href="/" class="logo">⚡ fonstr</a>
+            <a href="/" class="back-link">← Back to Home</a>
+        </div>
+    </header>
+
+    <section class="hero">
+        <div class="container">
+            <h1>Run a Nostr Relay on Your Phone</h1>
+            <p>Complete beginner's guide for Android users</p>
+        </div>
+    </section>
+
+    <section class="content">
+        <div class="container">
+            <div class="note">
+                <div class="note-title">📱 What You'll Need</div>
+                <p>An Android phone with at least 1GB of free storage. This guide works on any Android phone from the last 5+ years. No root required!</p>
+            </div>
+
+            <div class="step">
+                <span class="step-number">1</span>
+                <h2>Install Termux</h2>
+                <p>Termux is a terminal emulator for Android. It lets you run Linux commands on your phone - like having a mini computer in your pocket!</p>
+
+                <p><strong>How to install:</strong></p>
+                <ul>
+                    <li>Open the <strong>F-Droid</strong> app store on your phone</li>
+                    <li>Don't have F-Droid? Download it from <a href="https://f-droid.org/" target="_blank">f-droid.org</a></li>
+                    <li>Search for "Termux" in F-Droid</li>
+                    <li>Tap "Install"</li>
+                </ul>
+
+                <div class="note">
+                    <div class="note-title">⚠️ Important: Use F-Droid, NOT Google Play Store</div>
+                    <p>The Google Play Store version of Termux is outdated and won't work. Always use the F-Droid version.</p>
+                </div>
+            </div>
+
+            <div class="step">
+                <span class="step-number">2</span>
+                <h2>Open Termux</h2>
+                <p>Tap the Termux app to open it. You'll see a black screen with white text - this is your terminal!</p>
+
+                <p>You'll see a prompt that looks like this:</p>
+                <pre><code>$</code></pre>
+
+                <p>This <code>$</code> symbol means Termux is ready for your commands.</p>
+            </div>
+
+            <div class="step">
+                <span class="step-number">3</span>
+                <h2>Update Termux Packages</h2>
+                <p>Before installing anything, let's make sure Termux is up to date. Type this command and press Enter:</p>
+
+                <pre><code>pkg update && pkg upgrade</code></pre>
+
+                <p>When asked "Do you want to continue? [Y/n]", type <code>y</code> and press Enter.</p>
+
+                <div class="note">
+                    <div class="note-title">💡 What does this do?</div>
+                    <p>This updates the list of available software and upgrades any outdated packages. Think of it like updating apps on your phone.</p>
+                </div>
+
+                <p>⏱️ This might take 1-2 minutes depending on your internet connection.</p>
+            </div>
+
+            <div class="step">
+                <span class="step-number">4</span>
+                <h2>Install Node.js</h2>
+                <p>Node.js is the software that runs fonstr. Install it with this command:</p>
+
+                <pre><code>pkg install nodejs-lts</code></pre>
+
+                <p>Press <code>y</code> when asked to confirm.</p>
+
+                <p>⏱️ This will take 2-3 minutes to download and install.</p>
+
+                <div class="success">
+                    <p><strong>✅ How to know it worked:</strong> After installation, type <code>node --version</code> and you should see something like <code>v20.11.0</code></p>
+                </div>
+            </div>
+
+            <div class="step">
+                <span class="step-number">5</span>
+                <h2>Run Your Nostr Relay!</h2>
+                <p>Now for the fun part! Run your relay with just one command:</p>
+
+                <pre><code>npx fonstr</code></pre>
+
+                <p>The first time you run this, it will:</p>
+                <ul>
+                    <li>Download fonstr (takes about 70 seconds)</li>
+                    <li>Set up everything automatically</li>
+                    <li>Start your Nostr relay!</li>
+                </ul>
+
+                <div class="success">
+                    <p><strong>✅ Success!</strong> When you see "Server listening at http://0.0.0.0:4444", your relay is running!</p>
+                </div>
+
+                <p>Your Nostr relay is now live at:</p>
+                <ul>
+                    <li><strong>Relay URL:</strong> <code>ws://localhost:4444/relay</code></li>
+                    <li><strong>Web interface:</strong> <code>http://localhost:4444</code></li>
+                </ul>
+            </div>
+
+            <div class="step">
+                <span class="step-number">6</span>
+                <h2>Connect to Your Relay</h2>
+                <p>You can now use your relay with any Nostr client! Here's how:</p>
+
+                <p><strong>On the same phone:</strong></p>
+                <ul>
+                    <li>Open your favorite Nostr app (Amethyst, Damus, etc.)</li>
+                    <li>Go to Settings → Relays</li>
+                    <li>Add relay: <code>ws://localhost:4444/relay</code></li>
+                </ul>
+
+                <p><strong>From other devices on your WiFi:</strong></p>
+                <ul>
+                    <li>Find your phone's IP address (Settings → About Phone → Status → IP Address)</li>
+                    <li>Use: <code>ws://YOUR-PHONE-IP:4444/relay</code></li>
+                    <li>Example: <code>ws://192.168.1.100:4444/relay</code></li>
+                </ul>
+            </div>
+
+            <div class="step">
+                <span class="step-number">7</span>
+                <h2>Stopping and Restarting</h2>
+                <p><strong>To stop your relay:</strong></p>
+                <p>Press <code>Ctrl</code> + <code>C</code> in Termux (or use the special keys in Termux's keyboard)</p>
+
+                <p><strong>To start it again:</strong></p>
+                <p>Just run the same command:</p>
+                <pre><code>npx fonstr</code></pre>
+
+                <p>💡 The second time is instant - no downloading needed!</p>
+            </div>
+
+            <div class="step">
+                <span class="step-number">8</span>
+                <h2>Running in the Background</h2>
+                <p>Want to keep your relay running while using other apps?</p>
+
+                <p><strong>Option 1: Use Termux's session feature</strong></p>
+                <p>Swipe from the left edge of Termux to see sessions. You can create a new session and switch between them.</p>
+
+                <p><strong>Option 2: Run in background</strong></p>
+                <pre><code>nohup npx fonstr &</code></pre>
+                <p>This runs fonstr in the background. To stop it, you'll need to use <code>pkill -f fonstr</code></p>
+
+                <div class="note">
+                    <div class="note-title">🔋 Battery Note</div>
+                    <p>Running a relay will use battery. Consider plugging in your phone or running the relay only when needed.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="troubleshooting">
+        <div class="container">
+            <h2>Common Questions & Troubleshooting</h2>
+
+            <div class="faq-item">
+                <h3>Q: Why do I need F-Droid instead of Google Play Store?</h3>
+                <p>A: The Termux version on Google Play Store is outdated and no longer maintained. F-Droid has the latest version that works properly.</p>
+            </div>
+
+            <div class="faq-item">
+                <h3>Q: How much storage does this use?</h3>
+                <p>A: The initial installation uses about 300MB (Node.js + fonstr). The relay itself uses very little space unless you store many events.</p>
+            </div>
+
+            <div class="faq-item">
+                <h3>Q: Can I use this as my main relay?</h3>
+                <p>A: Yes! But keep in mind your phone needs to stay on and connected to WiFi. For 24/7 operation, consider a Raspberry Pi or cloud server.</p>
+            </div>
+
+            <div class="faq-item">
+                <h3>Q: What if I see "command not found"?</h3>
+                <p>A: Make sure you completed Step 4 (installing Node.js). Try running <code>pkg install nodejs-lts</code> again.</p>
+            </div>
+
+            <div class="faq-item">
+                <h3>Q: Can other people use my relay?</h3>
+                <p>A: Only if they're on the same WiFi network, or if you set up port forwarding on your router (advanced). By default, it's just for you and your local network.</p>
+            </div>
+
+            <div class="faq-item">
+                <h3>Q: How do I update fonstr?</h3>
+                <p>A: Just run <code>npx fonstr@latest</code> and it will use the newest version.</p>
+            </div>
+
+            <div class="faq-item">
+                <h3>Q: My phone gets hot. Is this normal?</h3>
+                <p>A: Some warmth is normal when first downloading/installing. If it stays hot, your relay might be under heavy load. Try stopping it and restarting.</p>
+            </div>
+
+            <div class="faq-item">
+                <h3>Q: Can I run this on iPhone?</h3>
+                <p>A: Unfortunately no. iOS doesn't allow apps like Termux. You would need an Android phone, tablet, or use a computer instead.</p>
+            </div>
+
+            <div class="faq-item">
+                <h3>Q: Help! Something went wrong!</h3>
+                <p>A: Try these steps in order:</p>
+                <ol style="margin-left: 2rem; color: var(--text-light);">
+                    <li>Stop fonstr (Ctrl+C)</li>
+                    <li>Update packages: <code>pkg update && pkg upgrade</code></li>
+                    <li>Restart Termux completely</li>
+                    <li>Try running <code>npx fonstr</code> again</li>
+                    <li>Still stuck? Ask for help on <a href="https://github.com/nostrapps/fonstr/issues" target="_blank">GitHub Issues</a></li>
+                </ol>
+            </div>
+        </div>
+    </section>
+
+    <section style="background: white; padding: 4rem 0; text-align: center;">
+        <div class="container">
+            <h2 style="margin-bottom: 1rem;">🎉 You Did It!</h2>
+            <p style="font-size: 1.25rem; color: var(--text-light); margin-bottom: 2rem;">
+                You're now running your own Nostr relay on your phone!
+            </p>
+            <div style="display: inline-flex; gap: 1rem; flex-wrap: wrap; justify-content: center;">
+                <a href="/" style="display: inline-block; padding: 0.875rem 2rem; background: var(--primary); color: white; text-decoration: none; border-radius: 0.5rem; font-weight: 600;">
+                    ← Back to Home
+                </a>
+                <a href="https://github.com/nostrapps/fonstr" style="display: inline-block; padding: 0.875rem 2rem; background: var(--text); color: white; text-decoration: none; border-radius: 0.5rem; font-weight: 600;" target="_blank">
+                    ⭐ Star on GitHub
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <p>Made with ❤️ for the Nostr community • <a href="/">fonstr</a> • <a href="https://github.com/nostrapps/fonstr">GitHub</a></p>
+        </div>
+    </footer>
+</body>
+</html>

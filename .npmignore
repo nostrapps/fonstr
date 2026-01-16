@@ -20,6 +20,7 @@ admin.html
 # Website assets (not needed in npm package)
 og-image.svg
 og-image.png
+mobile-guide.html
 
 # Build/deploy files
 bin/
