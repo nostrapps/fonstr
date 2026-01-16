@@ -36,7 +36,7 @@ Run a Nostr relay on your Android phone with Termux:
 npx fonstr
 ```
 
-**53 seconds** from zero to running relay. On a phone. In your pocket.
+**Under 90 seconds** from zero to running relay. On a phone. In your pocket.
 
 <img width="731" alt="fonstr running on Android/Termux" src="https://github.com/user-attachments/assets/0d8808ef-3a43-40df-bcfd-7c10a13614b9" />
 
@@ -62,7 +62,7 @@ Type one command. Get all of this:
 - ✅ CORS enabled
 
 ### 🌍 Runs Everywhere
-- ✅ **Android/Termux** (install in 53 seconds!)
+- ✅ **Android/Termux** (install in under 90 seconds!)
 - ✅ **Windows** (no build tools needed!)
 - ✅ **macOS, Linux, Raspberry Pi**
 - ✅ **Pure JavaScript** (no compilation, no native modules)
@@ -163,7 +163,7 @@ Don't let "easy" fool you. fonstr is **fast**:
 - ⚡ **Startup**: ~3 seconds
 - ⚡ **Response time**: Sub-millisecond
 - ⚡ **Throughput**: 1,500+ requests/second
-- ⚡ **Install** (Android): 53 seconds from scratch
+- ⚡ **Install** (Android): Under 90 seconds from scratch
 - ⚡ **Memory**: ~80MB (efficient)
 
 ---
@@ -307,7 +307,7 @@ Once running, your relay exposes:
 
 ---
 
-## 🚀 From Zero to Relay in 53 Seconds (Android)
+## 🚀 From Zero to Relay in Under 90 Seconds (Android)
 
 **Proof:** Install fonstr on a fresh Android phone with Termux:
 
@@ -318,7 +318,7 @@ Once running, your relay exposes:
 pkg update && pkg install nodejs-lts
 npx fonstr
 
-# Done. 53 seconds total.
+# Done. Under 90 seconds total.
 ```
 
 No other relay can do this.
