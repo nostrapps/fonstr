@@ -24,7 +24,6 @@ const port = args.find(arg => !arg.startsWith('-')) || process.env.PORT || '4444
 // Build JSS arguments with Nostr-first defaults
 const jssArgs = [
   '--port', port,
-  '--nostr-relay',
   '--root', process.env.DATA_ROOT || './fonstr-data',
   ...args.filter(arg => arg.startsWith('-'))
 ]
