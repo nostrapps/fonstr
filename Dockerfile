@@ -21,8 +21,10 @@ RUN openssl req \
     -keyout privkey.pem \
     -out fullchain.pem
 
-# Copy the server script to the working directory
+# Copy the server files to the working directory
 COPY index.js ./
+COPY lib/ ./lib/
+COPY bin/ ./bin/
 
 # Expose the server port
 EXPOSE 4444
