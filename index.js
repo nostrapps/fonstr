@@ -13,10 +13,10 @@
 
 import { spawn } from 'child_process'
 import { join, dirname } from 'path'
-import { fileURLToPath } from 'url'
 import { existsSync, mkdirSync, writeFileSync } from 'fs'
+import { createRequire } from 'module'
 
-const __dirname = dirname(fileURLToPath(import.meta.url))
+const requireFromHere = createRequire(import.meta.url)
 
 // Parse command line arguments
 const args = process.argv.slice(2)
@@ -182,13 +182,18 @@ const jssArgs = [
   ...args.filter(arg => arg.startsWith('-'))
 ]
 
-// Spawn jss directly (from jspod dependency)
-const jss = spawn('jss', jssArgs, {
+// Resolve the jss binary via the module graph, not PATH. npm hoists
+// `javascript-solid-server` above fonstr's own `node_modules` whenever
+// fonstr isn't the only package in the tree, so a PATH-prepended
+// `node_modules/fonstr/node_modules/.bin` would miss the local jss and
+// fall through to whatever (possibly stale, possibly absent) `jss` is
+// on the system PATH.
+const jssPkgJson = requireFromHere.resolve('javascript-solid-server/package.json')
+const jssBin = join(dirname(jssPkgJson), 'bin', 'jss.js')
+
+const jss = spawn(process.execPath, [jssBin, ...jssArgs], {
   stdio: 'inherit',
-  env: {
-    ...process.env,
-    PATH: `${join(__dirname, 'node_modules', '.bin')}${process.platform === 'win32' ? ';' : ':'}${process.env.PATH}`
-  }
+  env: process.env
 })
 
 jss.on('error', (err) => {
