@@ -1,6 +1,6 @@
 {
   "name": "fonstr",
-  "version": "0.0.25",
+  "version": "0.0.26",
   "description": "Nostr relay + web server - Just works on phones, servers, everywhere",
   "main": "index.js",
   "type": "module",
@@ -36,6 +36,6 @@
     "node": ">=18.0.0"
   },
   "dependencies": {
-    "jspod": "^0.0.7"
+    "javascript-solid-server": ">=0.0.223 <0.1.0"
   }
 }

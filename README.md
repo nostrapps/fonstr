@@ -24,7 +24,9 @@ npx fonstr
 
 **That's it.** You now have a Nostr relay running at `ws://localhost:4444/relay`
 
-No config files. No dependencies. No Docker. No setup. **It just works.**
+No config files. No Docker. No setup. **It just works.**
+
+It listens on `127.0.0.1` by default. To reach it from other devices on your network, add `--host 0.0.0.0`.
 
 ---
 
@@ -48,7 +50,7 @@ Type one command. Get all of this:
 
 ### 🔌 Full Nostr Relay
 - ✅ **NIP-01** compliant (EVENT, REQ, CLOSE, EOSE)
-- ✅ **NIP-11** relay information endpoint
+- ✅ **NIP-11** relay information at `/relay/info`, and at the relay URL itself (`Accept: application/nostr+json`) with JSS 0.0.224+
 - ✅ **NIP-98** HTTP authentication with Nostr keys
 - ✅ Event filtering, subscriptions, real-time updates
 - ✅ Rate limiting & memory protection
@@ -129,17 +131,13 @@ npx fonstr
 Visit `http://localhost:4444` → See your beautiful landing page
 Connect to `ws://localhost:4444/relay` → Use your relay
 
-### 4. HTTPS/WSS (Production Ready)
+### 4. HTTPS/WSS
 
 ```bash
-# Put your SSL certs in current directory:
-# - fullchain.pem
-# - privkey.pem
-
-npx fonstr --https
+npx fonstr 443 --host 0.0.0.0 --ssl-key privkey.pem --ssl-cert fullchain.pem
 ```
 
-Now you have `wss://` (secure WebSocket) for production use.
+Now you have `wss://` (secure WebSocket). For a public relay, a reverse proxy in front (see *Behind Nginx* below) is usually simpler.
 
 ---
 
@@ -205,13 +203,16 @@ DATA_ROOT=/var/fonstr npx fonstr  # Custom data directory
 ### Command Line Options
 
 ```bash
-npx fonstr --help                 # Show all options
-npx fonstr --port 8080            # Custom port
-npx fonstr --root ./data          # Custom data directory
-npx fonstr --https                # Enable HTTPS/WSS
-npx fonstr --multiuser            # Multi-user mode
-npx fonstr --no-auth              # Disable authentication
+npx fonstr --help                         # Show all options (fonstr passes the rest to JSS)
+npx fonstr --port 8080                    # Custom port (or: npx fonstr 8080)
+npx fonstr --root ./data                  # Custom data directory
+npx fonstr --host 0.0.0.0                 # Listen on all interfaces (default: 127.0.0.1)
+npx fonstr --ssl-key k.pem --ssl-cert c.pem   # HTTPS/WSS
+npx fonstr --multi-user                   # Multi-user mode (--multiuser also works)
+npx fonstr --nostr-max-events 5000        # Keep more events in memory (default: 1000)
 ```
+
+Any other [JSS option](https://github.com/JavaScriptSolidServer/JavaScriptSolidServer) is passed through, with its value.
 
 ---
 
@@ -265,26 +266,14 @@ Run a relay on your Android phone. Take it anywhere.
 # On Android with Termux
 pkg install nodejs-lts
 npx fonstr
-```
-
-### 5. **Production Relay**
-Scale to thousands of users with HTTPS/WSS.
-
-```bash
-npx fonstr --https --port 443
+# add --host 0.0.0.0 to reach it from other devices on your Wi-Fi
 ```
 
 ---
 
 ## 🐳 Docker (Optional)
 
-Prefer Docker? We got you:
-
-```bash
-docker run -d -p 4444:4444 ghcr.io/nostrapps/fonstr:latest
-```
-
-Or build locally:
+Prefer Docker? Build it locally:
 
 ```bash
 git clone https://github.com/nostrapps/fonstr.git
@@ -302,6 +291,7 @@ Once running, your relay exposes:
 | Endpoint | Purpose | Example |
 |----------|---------|---------|
 | `ws://localhost:4444/relay` | Nostr relay WebSocket | Connect with any client |
+| `http://localhost:4444/relay` with `Accept: application/nostr+json` | NIP-11 relay info (JSS 0.0.224+) | `nak relay ws://localhost:4444/relay` |
 | `http://localhost:4444/relay/info` | NIP-11 relay info (JSON) | Relay metadata |
 | `http://localhost:4444/` | Web server root | Serve your landing page |
 
@@ -321,27 +311,17 @@ npx fonstr
 # Done. Under 90 seconds total.
 ```
 
-No other relay can do this.
-
 ---
 
 ## 🛠️ Advanced Configuration
-
-### Persistent Storage
-
-```bash
-# Store events to disk (optional)
-npx fonstr --solid-storage
-```
 
 ### Custom Domain with SSL
 
 ```bash
 # 1. Get SSL cert (Let's Encrypt)
-# 2. Put fullchain.pem and privkey.pem in current directory
-# 3. Run with HTTPS
+# 2. Run with HTTPS on all interfaces
 
-npx fonstr --https --port 443
+npx fonstr 443 --host 0.0.0.0 --ssl-key privkey.pem --ssl-cert fullchain.pem
 ```
 
 Now accessible at `wss://yourdomain.com/relay`
@@ -389,10 +369,10 @@ server {
 A: No. `npx` downloads and runs fonstr temporarily. Node.js 18+ is the only requirement.
 
 **Q: Where are events stored?**
-A: In memory by default. Use `--solid-storage` to persist to disk.
+A: In memory: the most recent 1,000 by default (`--nostr-max-events` changes that). They are lost when fonstr stops, so use it for development, testing and personal experiments. For a durable public relay, use something like strfry or nostr-rs-relay.
 
-**Q: Can I use this in production?**
-A: Yes! Use `--https` for WSS support. fonstr handles 1,500+ req/sec.
+**Q: Can I use it on the internet?**
+A: Yes, with `--host 0.0.0.0` and either `--ssl-key`/`--ssl-cert` or a reverse proxy. Remember events live in memory.
 
 **Q: What's the difference from other relays?**
 A: fonstr is the easiest to install and run. Zero config, zero setup, works everywhere.

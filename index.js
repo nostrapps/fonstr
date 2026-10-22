@@ -7,7 +7,7 @@
  * Provides a full-featured Nostr relay plus web server capabilities.
  *
  * Usage:
- *   npx fonstr [port]
+ *   npx fonstr [port] [--port <n>] [--root <dir>] [--host <addr>] [--multiuser] [jss options]
  *   npx fonstr --help
  */
 
@@ -18,10 +18,37 @@ import { createRequire } from 'module'
 
 const requireFromHere = createRequire(import.meta.url)
 
-// Parse command line arguments
+// Parse command line arguments. fonstr owns --port, --root and --host (and
+// a bare port as the first argument); everything else goes to jss unchanged,
+// values included, so `--nostr-max-events 5000` reaches jss intact.
 const args = process.argv.slice(2)
-const port = args.find(arg => !arg.startsWith('-')) || process.env.PORT || '4444'
-const dataRoot = process.env.DATA_ROOT || './fonstr-data'
+const OWN = { '--port': 'port', '-p': 'port', '--root': 'root', '-r': 'root', '--host': 'host' }
+const opts = {}
+const passthrough = []
+for (let i = 0; i < args.length; i++) {
+  const arg = args[i]
+  const [flag, inline] = arg.includes('=') ? [arg.slice(0, arg.indexOf('=')), arg.slice(arg.indexOf('=') + 1)] : [arg, undefined]
+  if (OWN[flag]) {
+    const value = inline ?? args[++i]
+    if (value === undefined || value.startsWith('-')) {
+      console.error(`fonstr: ${flag} needs a value`)
+      process.exit(1)
+    }
+    opts[OWN[flag]] = value
+  } else if (i === 0 && /^\d+$/.test(arg)) {
+    opts.port = arg
+  } else {
+    passthrough.push(arg)
+  }
+}
+const port = opts.port || process.env.PORT || '4444'
+const dataRoot = opts.root || process.env.DATA_ROOT || './fonstr-data'
+// localhost by default: this is a dev/test relay. Use --host 0.0.0.0 to
+// reach it from other devices (and in Docker).
+const host = opts.host || process.env.HOST || '127.0.0.1'
+// jss spells it --multi-user; accept the older --multiuser too
+const multiuser = passthrough.some(a => a === '--multiuser' || a === '--multi-user')
+for (let i = 0; i < passthrough.length; i++) if (passthrough[i] === '--multiuser') passthrough[i] = '--multi-user'
 
 // Create data directory if it doesn't exist
 if (!existsSync(dataRoot)) {
@@ -176,10 +203,11 @@ const jssArgs = [
   'start',
   '--port', port,
   '--root', dataRoot,
+  '--host', host,
   '--nostr',  // Enable Nostr relay
-  '--single-user',  // Single-user mode (simpler, no registration)
-  '--no-idp',  // Disable Identity Provider
-  ...args.filter(arg => arg.startsWith('-'))
+  // Single-user mode (simpler, no registration) unless --multiuser was asked for
+  ...(multiuser ? [] : ['--single-user', '--no-idp']),
+  ...passthrough
 ]
 
 // Resolve the jss binary via the module graph, not PATH. npm hoists
